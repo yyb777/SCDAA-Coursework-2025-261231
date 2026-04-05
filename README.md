@@ -47,8 +47,31 @@ In particular, the script checks that the terminal condition is handled correctl
 
 Exercise 1.2
 
+Run:
 ```
 python src/monte_carlo.py
 ```
+This will:
 
-123w
+run a basic Monte Carlo test
+generate and save the following figures:
+figures/mc_time_convergence.png
+figures/mc_sample_convergence.png
+print convergence results in the terminal for:
+time-step discretisation
+Monte Carlo sample-size convergence
+print a Monte Carlo sample-size table in the terminal
+
+Current setup:
+
+the error is defined as the absolute difference between the Monte Carlo estimate and the benchmark value from Exercise 1.1
+the time-step convergence test varies the number of time steps N
+the sample-size convergence test varies the number of Monte Carlo paths n_paths
+
+Typical terminal output includes:
+
+N = ..., abs error = ...
+n_paths = ..., abs error = ...
+Exercise 2.1
+
+Run:
