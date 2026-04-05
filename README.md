@@ -39,13 +39,13 @@ python src/lqr_solver.py
 
 This performs a basic sanity check for:
 
-the Riccati ODE solver
-the value function
-the optimal control
+- the Riccati ODE solver
+- the value function
+- the optimal control
 
 In particular, the script checks that the terminal condition is handled correctly.
 
-Exercise 1.2
+### Exercise 1.2
 
 Run:
 ```
@@ -53,25 +53,159 @@ python src/monte_carlo.py
 ```
 This will:
 
-run a basic Monte Carlo test
-generate and save the following figures:
-figures/mc_time_convergence.png
-figures/mc_sample_convergence.png
-print convergence results in the terminal for:
-time-step discretisation
-Monte Carlo sample-size convergence
-print a Monte Carlo sample-size table in the terminal
+- run a basic Monte Carlo test
+- generate and save the following figures:
+- `figures/mc_time_convergence.png`
+- `figures/mc_sample_convergence.png`
+- print convergence results in the terminal for:
+- time-step discretisation
+- Monte Carlo sample-size convergence
+- print a Monte Carlo sample-size table in the terminal
 
 Current setup:
 
-the error is defined as the absolute difference between the Monte Carlo estimate and the benchmark value from Exercise 1.1
-the time-step convergence test varies the number of time steps N
-the sample-size convergence test varies the number of Monte Carlo paths n_paths
+- the error is defined as the absolute difference between the Monte Carlo estimate and the -benchmark value from Exercise 1.1
+- the time-step convergence test varies the number of time steps N
+- the sample-size convergence test varies the number of Monte Carlo paths `n_paths`
 
 Typical terminal output includes:
 
-N = ..., abs error = ...
-n_paths = ..., abs error = ...
-Exercise 2.1
+- `N = ..., abs error = ...`
+- `n_paths = ..., abs error = ...`
+### Exercise 2.1
 
 Run:
+```bash
+python src/networks.py
+```
+
+This will:
+
+- sample training data from the benchmark value function in Exercise 1.1
+- train a NetDGM-style neural network for the value function
+- save the training loss figure:
+  - `figures/ex2_1_value_loss.png`
+
+Current setup:
+
+- terminal time: T = 1
+- training samples:
+- t ~ Uniform([0, 1])
+- x ~ Uniform([-3, 3] x [-3, 3])
+- network type: NetDGM-style model
+- hidden size: 100
+- optimizer: Adam
+- loss: mean squared error (MSE)
+
+### Exercise 2.2
+
+Run:
+```bash
+python src/networks.py
+```
+This will also:
+
+- sample training data from the benchmark optimal control in Exercise 1.1
+- train a feedforward neural network for the optimal Markov control
+- save the training loss figure:
+  - `figures/ex2_2_control_loss.png`
+
+Current setup:
+
+- input dimension: 3 for (t, x1, x2)
+- output dimension: 2 for the control
+- network type: feedforward neural network
+- architecture: 2 hidden layers, width 100
+- optimizer: Adam
+- loss: mean squared error (MSE)
+
+### Exercise 2 terminal outputs
+
+In addition to the saved figures, `python src/networks.py` also prints:
+
+- a training metrics table at 500-epoch intervals containing:
+ - Epoch
+ - Value Loss
+ - Control Loss
+- a small test MSE summary for both networks:
+ - Value network test MSE
+ - Control network test MSE
+
+This is used to check that the trained networks not only reduce training loss, but also approximate the benchmark value function and optimal control on newly sampled test points.
+
+### Exercise 3.1
+Run:
+```bash
+python src/dgm.py
+```
+This will:
+
+- train a DGM-style neural network to solve the linear PDE under the fixed control α=(1,1)
+
+- save the DGM training loss figure:
+ - `figures/ex3_1_dgm_loss.png`
+- evaluate the trained DGM solution against a Monte Carlo benchmark during training
+- save the relative error figure:
+ - `figures/ex3_1_dgm_mc_error.png`
+- print a metrics table in the terminal containing:
+- epoch
+- total loss
+- PDE residual
+- boundary residual
+- relative error against Monte Carlo
+
+Current setup:
+
+- fixed control: α=(1,1)
+- terminal time: T = 1
+- interior samples:
+ - `t ~ Uniform([0, 1])`
+ - `x ~ Uniform([-3, 3] x [-3, 3])`
+- network: NetDGM-style model with hidden size `100`
+- optimizer: `Adam`
+- training loss = PDE residual loss + terminal boundary loss
+- Monte Carlo comparison is evaluated at a fixed test point during training
+
+
+### Exercise 4.1
+Run:
+```bash
+python src/policy_iteration.py
+```
+This will:
+
+- run policy iteration with DGM for the coupled value function and Markov control problem
+- alternate between:
+ - policy evaluation: solving the PDE for the value network with the current control network fixed
+ - policy improvement: updating the control network by minimizing the Hamiltonian
+- compare the learned value function and control against the Exercise 1.1 benchmark
+
+Saved figures:
+
+- `figures/ex4_1_value_convergence.png`
+- `figures/ex4_1_control_convergence.png`
+
+Terminal output:
+
+- a policy iteration table containing:
+ - iteration number
+ - final value PDE loss
+ - final actor Hamiltonian
+ - value MSE vs Exercise 1.1
+ - control MSE vs Exercise 1.1
+
+Current setup:
+
+- number of outer policy iterations: 8
+- value network: hidden size 100
+- control network: 2 hidden layers, width 100
+- policy evaluation optimizer: Adam
+- policy improvement optimizer: Adam
+- convergence is measured by comparing the learned value function and control against the Exercise 1.1 LQR benchmark
+
+### Notes
+
+- The repository is being updated step by step as each exercise is completed.
+- The latest commit before the deadline should be used for assessment.
+- All figures and terminal tables referenced in the report should be reproducible using the commands above.
+
